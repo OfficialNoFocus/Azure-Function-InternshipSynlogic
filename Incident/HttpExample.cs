@@ -26,6 +26,8 @@ namespace Incident
 
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
 
+            string test = "Nog niet gereed"; // TODO delete becasue of sample
+
 
             IncidentContext db = new IncidentContext();
 
