@@ -82,28 +82,10 @@ namespace Incident
 
             IncidentContext db = new IncidentContext();
 
-            var update = await db.Incidents.FindAsync(id);
-            if (update == null)
-            {
-                log.LogWarning($"Item {id} not found");
-                return new NotFoundResult();
-            }
-
-            update.Id = data.Id;
-            if (!string.IsNullOrEmpty(data.Title))
-            {
-                update.Title = data.Title;
-                update.Discription = data.Discription;
-                update.Location = data.Location;
-                update.Owner = data.Owner;
-                update.Status = data.Status;
-                update.Weight = data.Weight;
-                update.CreationTime = data.CreationTime;
-            }
-
+            db.Incidents.Update(data);
             await db.SaveChangesAsync();
 
-            return new OkObjectResult(update);
+            return new OkObjectResult(JsonConvert.SerializeObject(db.Incidents));
         }
 
         [FunctionName("DeleteIncident")]
