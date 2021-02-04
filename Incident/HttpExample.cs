@@ -47,7 +47,7 @@ namespace Incident
 
             IncidentContext db = new IncidentContext();
 
-            return new OkObjectResult(JsonConvert.SerializeObject(db.Incidents.Where(x => x.Id == id)));
+            return new OkObjectResult(JsonConvert.SerializeObject(db.Incidents.Where(x => x.Id == id).FirstOrDefault()));
         }
 
         [FunctionName("PostIncident")]
