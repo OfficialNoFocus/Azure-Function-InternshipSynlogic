@@ -69,6 +69,43 @@ namespace Incident
             return new OkObjectResult(JsonConvert.SerializeObject(db.Incidents));
         }
 
+        [FunctionName("PutIncident")]
+        public static async Task<IActionResult> PutIncident(
+            [HttpTrigger(AuthorizationLevel.Function, "put", Route = "incidents/{id}")] HttpRequest req, int id,
+             ILogger log)
+        {
+            log.LogInformation("C# HTTP trigger function processed a request.");
+
+
+            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            var data = JsonConvert.DeserializeObject<IncidentModel>(requestBody);
+
+            IncidentContext db = new IncidentContext();
+
+            var update = await db.Incidents.FindAsync(id);
+            if (update == null)
+            {
+                log.LogWarning($"Item {id} not found");
+                return new NotFoundResult();
+            }
+
+            update.Id = data.Id;
+            if (!string.IsNullOrEmpty(data.Title))
+            {
+                update.Title = data.Title;
+                update.Discription = data.Discription;
+                update.Location = data.Location;
+                update.Owner = data.Owner;
+                update.Status = data.Status;
+                update.Weight = data.Weight;
+                update.CreationTime = data.CreationTime;
+            }
+
+            await db.SaveChangesAsync();
+
+            return new OkObjectResult(update);
+        }
+
         [FunctionName("DeleteIncident")]
         public static async Task<IActionResult> DeleteIncidents(
             [HttpTrigger(AuthorizationLevel.Function, "delete", Route = "incidents/{id}")] HttpRequest req, int id, 
