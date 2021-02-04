@@ -69,6 +69,25 @@ namespace Incident
             return new OkObjectResult(JsonConvert.SerializeObject(db.Incidents));
         }
 
+        [FunctionName("PutIncident")]
+        public static async Task<IActionResult> PutIncident(
+            [HttpTrigger(AuthorizationLevel.Function, "put", Route = "incidents/{id}")] HttpRequest req, int id,
+             ILogger log)
+        {
+            log.LogInformation("C# HTTP trigger function processed a request.");
+
+
+            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            var data = JsonConvert.DeserializeObject<IncidentModel>(requestBody);
+
+            IncidentContext db = new IncidentContext();
+
+            db.Incidents.Update(data);
+            await db.SaveChangesAsync();
+
+            return new OkObjectResult(JsonConvert.SerializeObject(db.Incidents));
+        }
+
         [FunctionName("DeleteIncident")]
         public static async Task<IActionResult> DeleteIncidents(
             [HttpTrigger(AuthorizationLevel.Function, "delete", Route = "incidents/{id}")] HttpRequest req, int id, 
