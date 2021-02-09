@@ -57,7 +57,7 @@ namespace Incident.App.Controller
             db.Incidents.Add(data);
             db.SaveChanges();
 
-            return new OkObjectResult(JsonConvert.SerializeObject(db.Incidents));
+            return new OkObjectResult(JsonConvert.SerializeObject(data));
         }
 
         [FunctionName("PutIncident")]
@@ -75,7 +75,7 @@ namespace Incident.App.Controller
             db.Incidents.Update(data);
             await db.SaveChangesAsync();
 
-            return new OkObjectResult(JsonConvert.SerializeObject(db.Incidents));
+            return new OkObjectResult(JsonConvert.SerializeObject(data));
         }
 
         [FunctionName("DeleteIncident")]
