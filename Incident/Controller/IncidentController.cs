@@ -25,7 +25,7 @@ namespace Incident.App.Controller
             IncidentContext db = new IncidentContext();
             List<IncidentModel> incidents = db.Incidents.ToList();
 
-            return new OkObjectResult(JsonConvert.SerializeObject(incidents));
+            return new JsonResult(incidents);
         }
 
         [FunctionName("GetIncident")]
@@ -39,7 +39,7 @@ namespace Incident.App.Controller
 
             IncidentContext db = new IncidentContext();
 
-            return new OkObjectResult(JsonConvert.SerializeObject(db.Incidents.Where(x => x.Id == id).FirstOrDefault()));
+            return new JsonResult(db.Incidents.Where(x => x.Id == id).FirstOrDefault());
         }
 
         [FunctionName("PostIncident")]
@@ -57,7 +57,7 @@ namespace Incident.App.Controller
             db.Incidents.Add(data);
             db.SaveChanges();
 
-            return new OkObjectResult(JsonConvert.SerializeObject(data));
+            return new JsonResult(data);
         }
 
         [FunctionName("PutIncident")]
@@ -68,14 +68,22 @@ namespace Incident.App.Controller
             log.LogInformation("C# HTTP trigger function processed a request.");
 
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            log.LogInformation($"PutIncident body recieved: {requestBody}");
             var data = JsonConvert.DeserializeObject<IncidentModel>(requestBody);
 
             IncidentContext db = new IncidentContext();
+            try
+            {
+                db.Incidents.Update(data);
+                await db.SaveChangesAsync();
 
-            db.Incidents.Update(data);
-            await db.SaveChangesAsync();
-
-            return new OkObjectResult(JsonConvert.SerializeObject(data));
+                return new JsonResult(data);
+            }
+            catch (System.Exception ex)
+            {
+                log.LogError(ex.Message);
+                return new BadRequestObjectResult(ex);
+            }
         }
 
         [FunctionName("DeleteIncident")]
